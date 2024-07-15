@@ -3,6 +3,7 @@ const app = require("../app");
 const seed = require('../db/seeds/seed')
 const db = require('../db/connection')
 const data = require('../db/data/test-data')
+const endpoints = require("../endpoints.json")
 
 beforeEach(() => {
     return seed(data)
@@ -12,8 +13,19 @@ beforeEach(() => {
     return db.end()
   })
 
+  describe("GET /api", () => {
+    test("responds with a JSON detailing all possible endpoints", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then(({body}) => {
+            expect(body.endpoints).toEqual(endpoints)
+        })
+    })
+  })
 
-  describe("/api/topics", () => {
+
+  describe("GET /api/topics", () => {
     test("should return a 200 status and an array of all topics", () => {
     return request(app)
     .get('/api/topics')
@@ -28,5 +40,10 @@ beforeEach(() => {
             expect(topic.hasOwnProperty('slug')).toBe(true)
     })
     })
+  })  
+  test("should return 404 status if passed an endpoint that doesn't exist", ()=> {
+    return request(app)
+    .get("/api/notARealEndpoint")
+    .expect(404)
   })
-})
+  })
