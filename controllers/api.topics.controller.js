@@ -8,7 +8,7 @@ function getTopics(request, response){
 })
 }
 
-const getArticleById = (req, res, next) => {
+function getArticleById(req, res, next){
     const { article_id } = req.params;
     fetchArticleById(article_id)
       .then((article) => {

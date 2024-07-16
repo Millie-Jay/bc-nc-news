@@ -50,27 +50,29 @@ beforeEach(() => {
   })
 
   describe("GET /api/articles/:article_id", () => {
-    test("should return an article object with specific properties", async () => {
-      const response = await request(app)
+    test("should return an article object with specific properties", () => {
+      return request(app)
         .get('/api/articles/1')
-        .expect(200);
-      
-      const article = response.body.article;
-      expect(article).toBeDefined();
-      expect(article).toHaveProperty('author', "butter_bridge");
-      expect(article).toHaveProperty('title', "Living in the shadow of a great man");
-      expect(article).toHaveProperty('article_id', 1);
-      expect(article).toHaveProperty('topic', "mitch");
-      expect(article).toHaveProperty('created_at', "2020-07-09T20:11:00.000Z");
-      expect(article).toHaveProperty('votes', 100);
-      expect(article).toHaveProperty('article_img_url', "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700");
+        .expect(200)
+        .then((response) => {
+          const article = response.body.article;
+          expect(article).toBeDefined();
+          expect(article).toHaveProperty('author', "butter_bridge");
+          expect(article).toHaveProperty('title', "Living in the shadow of a great man");
+          expect(article).toHaveProperty('article_id', 1);
+          expect(article).toHaveProperty('topic', "mitch");
+          expect(article).toHaveProperty('created_at', "2020-07-09T20:11:00.000Z"); // Date should be in ISO format string
+          expect(article).toHaveProperty('votes', 100);
+          expect(article).toHaveProperty('article_img_url', "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700");
+        });
     });
   
-    test("should respond with a 404 & error message for a valid id not registered", async () => {
-      const response = await request(app)
+    test("should respond with a 404 & error message for a valid id not registered", () => {
+      return request(app)
         .get("/api/articles/999999999")
-        .expect(404);
-      
-      expect(response.body.message).toBe('404 - Bad Request');
+        .expect(404)
+        .then((response) => {
+          expect(response.body.message).toBe('404 - Bad Request');
+        });
     });
   });
