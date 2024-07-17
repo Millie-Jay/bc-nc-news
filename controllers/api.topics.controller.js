@@ -1,4 +1,4 @@
-const {fetchTopics, fetchArticleById} = require("../models/api.topics.models");
+const {fetchTopics, fetchArticleById, fetchArticles} = require("../models/api.topics.models");
 const db = require("../db/connection");
 
 
@@ -8,14 +8,22 @@ function getTopics(request, response){
 })
 }
 
-function getArticleById(req, res, next){
-    const { article_id } = req.params;
+function getArticleById(request, response, next){
+    const { article_id } = request.params;
     fetchArticleById(article_id)
       .then((article) => {
-        res.status(200).send({ article });
+        response.status(200).send({ article });
       }).catch((err) => {
           next(err)
       })
   };
 
-module.exports = {getTopics, getArticleById}
+  function getArticles(request, response, next){
+    fetchArticles()
+    .then((articles) => {
+        response.status(200).send({articles: articles});
+  }).catch((err) => {
+        next(err)
+  })}
+
+module.exports = {getTopics, getArticleById, getArticles}
