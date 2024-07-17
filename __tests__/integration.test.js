@@ -56,12 +56,11 @@ beforeEach(() => {
         .expect(200)
         .then((response) => {
           const article = response.body.article;
-          expect(article).toBeDefined();
           expect(article).toHaveProperty('author', "butter_bridge");
           expect(article).toHaveProperty('title', "Living in the shadow of a great man");
           expect(article).toHaveProperty('article_id', 1);
           expect(article).toHaveProperty('topic', "mitch");
-          expect(article).toHaveProperty('created_at', "2020-07-09T20:11:00.000Z"); // Date should be in ISO format string
+          expect(article).toHaveProperty('created_at', "2020-07-09T20:11:00.000Z");
           expect(article).toHaveProperty('votes', 100);
           expect(article).toHaveProperty('article_img_url', "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700");
         });
@@ -76,3 +75,64 @@ beforeEach(() => {
         });
     });
   });
+
+  describe("GET /api/articles", () => {
+    test("should return a 200 status and array of article objects", () => {
+      return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const articles = response.body.articles;
+        expect(Array.isArray(articles)).toBe(true);
+      });
+    })
+    test.only("should return an array containing expected properties as well as a comment_count", () => {
+      return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const articles = response.body.articles;
+        expect(articles.length).toBe(13)
+        articles.forEach((article) => {
+          expect(article).toHaveProperty("author");
+          expect(article).toHaveProperty("title");
+          expect(article).toHaveProperty("article_id");
+          expect(article).toHaveProperty("topic");
+          expect(article).toHaveProperty("created_at");
+          expect(article).toHaveProperty("votes");
+          expect(article).toHaveProperty("article_img_url");
+          expect(article).toHaveProperty("comment_count");
+      })  
+    })
+
+  })
+    test("should return article objects which have the correct data type values", () => {
+      return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const articles = response.body.articles;
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(String)
+        })
+      })
+      
+  })
+})
+  test("articles should be ordered by date descending", () => {
+    return request(app)
+    .get("/api/articles")
+    .expect(200)
+    .then((response) => {
+      const articles = response.body.articles;
+    expect(articles).toBeSortedBy("created_at", {descending: true})
+  })
+})
+})
