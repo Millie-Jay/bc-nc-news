@@ -272,7 +272,7 @@ describe("POST api/:article_id/comments", () => {
         expect(response.body.msg).toBe("404: Not found");
       });
   });
-  test("should return a ", () => {
+  test("should return a 404 response when provided an incorrect username data type", () => {
     return request(app)
       .post("/api/articles/3/comments")
       .send({
