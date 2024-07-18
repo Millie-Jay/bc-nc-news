@@ -3,6 +3,7 @@ const {
   fetchArticleById,
   fetchArticles,
   fetchArticleComments,
+  createComment,
 } = require("../models/api.topics.models");
 const db = require("../db/connection");
 
@@ -44,4 +45,26 @@ function getArticleComments(request, response, next) {
     });
 }
 
-module.exports = { getTopics, getArticleById, getArticles, getArticleComments };
+function postComment(request, response, next) {
+  const body = request.body.body;
+  const author = request.body.author;
+  const { article_id } = request.params;
+  if (body.length === 0 || author.length === 0) {
+    next({ status: 400, msg: "400: Bad request" });
+  }
+  createComment(body, author, article_id)
+    .then((comment) => {
+      response.status(201).send({ comment });
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
+module.exports = {
+  getTopics,
+  getArticleById,
+  getArticles,
+  getArticleComments,
+  postComment,
+};

@@ -169,3 +169,134 @@ describe("/api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("POST api/:article_id/comments", () => {
+  test("should return a posted comment with a 201 status", () => {
+    return request(app)
+      .post("/api/articles/3/comments")
+      .send({
+        author: "butter_bridge",
+        body: "Brilliant article, going on the fridge",
+      })
+      .expect(201)
+      .then((response) => {
+        const comment = response.body.comment;
+        expect(comment).toEqual({
+          article_id: expect.any(Number),
+          comment_id: expect.any(Number),
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+        });
+      });
+  });
+  test("should return 400 if comment has no input", () => {
+    return request(app)
+      .post("/api/articles/3/comments")
+      .send({
+        author: "butter_bridge",
+        body: "",
+      })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("400: Bad request");
+      });
+  });
+  test("should return a 400 if no username given", () => {
+    return request(app)
+      .post("/api/articles/3/comments")
+      .send({
+        author: "",
+        body: "Brilliant article, going on the fridge",
+      })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("400: Bad request");
+      });
+  });
+  test("should return a 404 if the article does not exist", () => {
+    return request(app)
+      .post("/api/articles/3493/comments")
+      .send({
+        author: "butter_bridge",
+        body: "Brilliant article, going on the fridge",
+      })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("404: Not found");
+      });
+  });
+  test("should return a 400 status if the article id is invalid", () => {
+    return request(app)
+      .post("/api/articles/flipflops/comments")
+      .send({
+        author: "butter_bridge",
+        body: "Brilliant article, going on the fridge",
+      })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("400: Bad request");
+      });
+  });
+  test("should ignore anything else sent on the body that is not relevant", () => {
+    return request(app)
+      .post("/api/articles/3/comments")
+      .send({
+        author: "butter_bridge",
+        body: "Brilliant article, going on the fridge",
+        teapot: "I am a teapot",
+      })
+      .expect(201)
+      .then((response) => {
+        const comment = response.body.comment;
+        expect(comment).toEqual({
+          article_id: expect.any(Number),
+          comment_id: expect.any(Number),
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+        });
+      });
+  });
+  test("should return a 404 status when passed a username that is not valid", () => {
+    return request(app)
+      .post("/api/articles/3/comments")
+      .send({
+        author: "notAregisteredUser",
+        body: "Brilliant article, going on the fridge",
+      })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("404: Not found");
+      });
+  });
+  test("should return a ", () => {
+    return request(app)
+      .post("/api/articles/3/comments")
+      .send({
+        author: 5,
+        body: "Brilliant article, going on the fridge",
+      })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("404: Not found");
+      });
+  });
+});
+
+//PATCH
+//will take a single inc_votes property - a number
+//user should be able to add votes
+//object with one property increase_votes
+
+// /api/articles/4/
+// 200: need an object to send as a request. {inc_votes: 1}
+//TEST expect resonse.body.votes to be 1. (if no votes)
+
+//404 article_id not found. (autopass)
+
+//400: invalid article_id NaN
+//400: invalid inc_votes NaN Integer
+//400: inc_votes missing
