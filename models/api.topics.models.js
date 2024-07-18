@@ -1,25 +1,26 @@
-const db = require("../db/connection")
+const db = require("../db/connection");
 
-function fetchTopics(){
-    return db.query('SELECT * FROM topics')
-    .then(({rows}) => {
-        return rows;
-    }
-)
+function fetchTopics() {
+  return db.query("SELECT * FROM topics").then(({ rows }) => {
+    return rows;
+  });
 }
 
-function fetchArticleById(article_id){
-  return db.query(`SELECT * FROM articles WHERE article_id = $1;`, [article_id])
+function fetchArticleById(article_id) {
+  return db
+    .query(`SELECT * FROM articles WHERE article_id = $1;`, [article_id])
     .then((returned) => {
       if (returned.rows.length === 0) {
-        return Promise.reject({ message: "404 - Bad Request", status: 404 });
+        return Promise.reject({ msg: "404 - Not found", status: 404 });
       }
       return returned.rows[0];
     });
 }
 
-function fetchArticles(){
-return db.query(`
+function fetchArticles() {
+  return db
+    .query(
+      `
     SELECT
         articles.author,
         articles.title,
@@ -37,9 +38,37 @@ return db.query(`
         articles.article_id
     ORDER BY
         articles.created_at DESC;
-  `).then((body) => {
-return body.rows
-})
+  `
+    )
+    .then((body) => {
+      return body.rows;
+    });
 }
 
-module.exports = {fetchTopics, fetchArticleById, fetchArticles}
+function fetchArticleComments(article_id) {
+  return db
+    .query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "404: Article does not exist",
+        });
+      }
+      return db.query(
+        `
+          SELECT * FROM comments WHERE comments.article_id = $1 ORDER BY comments.created_at DESC;`,
+        [article_id]
+      );
+    })
+    .then((result) => {
+      return result.rows;
+    });
+}
+
+module.exports = {
+  fetchTopics,
+  fetchArticleById,
+  fetchArticles,
+  fetchArticleComments,
+};
