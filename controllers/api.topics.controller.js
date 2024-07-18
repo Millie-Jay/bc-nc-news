@@ -4,6 +4,7 @@ const {
   fetchArticles,
   fetchArticleComments,
   createComment,
+  patchVotes,
 } = require("../models/api.topics.models");
 const db = require("../db/connection");
 
@@ -61,10 +62,23 @@ function postComment(request, response, next) {
     });
 }
 
+function incDecVotes(request, response, next) {
+  const { article_id } = request.params;
+  const { inc_votes } = request.body;
+  patchVotes(inc_votes, article_id)
+    .then((article) => {
+      response.status(200).send(article);
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
 module.exports = {
   getTopics,
   getArticleById,
   getArticles,
   getArticleComments,
   postComment,
+  incDecVotes,
 };

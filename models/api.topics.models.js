@@ -77,10 +77,34 @@ function createComment(body, author, article_id) {
     });
 }
 
+function patchVotes(inc_votes, article_id) {
+  if (!Number.isInteger(inc_votes)) {
+    return Promise.reject({
+      status: 400,
+      msg: "400: Bad request",
+    });
+  }
+  return db
+    .query(
+      `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *;`,
+      [inc_votes, article_id]
+    )
+    .then((result) => {
+      if (result.rows[0] === undefined) {
+        return Promise.reject({
+          status: 404,
+          msg: "404: Article does not exist",
+        });
+      }
+      return result.rows[0];
+    });
+}
+
 module.exports = {
   fetchTopics,
   fetchArticleById,
   fetchArticles,
   fetchArticleComments,
   createComment,
+  patchVotes,
 };
