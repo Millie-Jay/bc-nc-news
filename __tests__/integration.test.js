@@ -272,7 +272,7 @@ describe("POST api/:article_id/comments", () => {
         expect(response.body.msg).toBe("404: Not found");
       });
   });
-  test("should return a ", () => {
+  test("should return a 404 response when provided an incorrect username data type", () => {
     return request(app)
       .post("/api/articles/3/comments")
       .send({
@@ -286,17 +286,67 @@ describe("POST api/:article_id/comments", () => {
   });
 });
 
-//PATCH
-//will take a single inc_votes property - a number
-//user should be able to add votes
-//object with one property increase_votes
-
-// /api/articles/4/
-// 200: need an object to send as a request. {inc_votes: 1}
-//TEST expect resonse.body.votes to be 1. (if no votes)
-
-//404 article_id not found. (autopass)
-
-//400: invalid article_id NaN
-//400: invalid inc_votes NaN Integer
-//400: inc_votes missing
+describe("PATCH /api/articles/:article_id", () => {
+  test("should return 200 status and update the vote count for article_id", () => {
+    const increaseVotes = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(increaseVotes)
+      .expect(200)
+      .then((response) => {
+        const article = response.body;
+        expect(article.votes).toEqual(101);
+        expect(article.article_id).toEqual(1);
+      });
+  });
+  test("should return 404 article does not exist when given an article number that doesn't exist", () => {
+    const increaseVotes = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/63242")
+      .send(increaseVotes)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("404: Article does not exist");
+      });
+  });
+  test("should return 400 bad request when given an invalid article", () => {
+    const increaseVotes = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/notANumber")
+      .send(increaseVotes)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("400: Bad request");
+      });
+  });
+  test("should return 400 when given a vote that another data type than a number", () => {
+    const increaseVotes = { inc_votes: "1" };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(increaseVotes)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("400: Bad request");
+      });
+  });
+  test("should return 400 when given an vote that is is a float value", () => {
+    const increaseVotes = { inc_votes: 1.4 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(increaseVotes)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("400: Bad request");
+      });
+  });
+  test("should return 400 when not given an inc_votes object", () => {
+    const increaseVotes = { FlipFlops: 1 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(increaseVotes)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("400: Bad request");
+      });
+  });
+});
