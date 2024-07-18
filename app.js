@@ -5,6 +5,7 @@ const {
   getArticleById,
   getArticles,
   getArticleComments,
+  postComment,
 } = require("./controllers/api.topics.controller");
 const endpoints = require("./endpoints.json");
 const db = require("./db/connection");
@@ -25,8 +26,9 @@ app.get("/api/articles", getArticles);
 
 app.get("/api/articles/:article_id/comments", getArticleComments);
 
+app.post("/api/articles/:article_id/comments", postComment);
+
 app.use((err, request, response, next) => {
-  console.log(err);
   if (err.status) {
     response.status(err.status).send({ msg: err.msg });
   } else next(err);
@@ -39,7 +41,12 @@ app.use((err, request, response, next) => {
 });
 
 app.use((err, request, response, next) => {
-  console.log(err);
+  if (err.code === "23503") {
+    response.status(404).send({ msg: "404: Not found" });
+  } else next(err);
+});
+
+app.use((err, request, response, next) => {
   response.status(500).send({ msg: "Internal Server Error" });
 });
 
