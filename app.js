@@ -8,6 +8,7 @@ const {
   postComment,
   incDecVotes,
   deleteComment,
+  getUsers,
 } = require("./controllers/api.topics.controller");
 const endpoints = require("./endpoints.json");
 const db = require("./db/connection");
@@ -34,6 +35,8 @@ app.patch("/api/articles/:article_id", incDecVotes);
 
 app.delete("/api/comments/:comment_id", deleteComment);
 
+app.get("/api/users", getUsers);
+
 app.use((err, request, response, next) => {
   if (err.status) {
     response.status(err.status).send({ msg: err.msg });
@@ -47,6 +50,7 @@ app.use((err, request, response, next) => {
 });
 
 app.use((err, request, response, next) => {
+  console.log(err);
   if (err.code === "23503") {
     response.status(404).send({ msg: "404: Not found" });
   } else next(err);
