@@ -6,6 +6,7 @@ const {
   createComment,
   patchVotes,
   modelDeleteComment,
+  fetchUsers,
 } = require("../models/api.topics.models");
 const db = require("../db/connection");
 const commentExists = require("../db/seeds/utils");
@@ -87,6 +88,17 @@ function deleteComment(request, response, next) {
     });
 }
 
+function getUsers(request, response, next) {
+  fetchUsers()
+    .then((users) => {
+      console.log({ users });
+      response.status(200).send({ users });
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
 module.exports = {
   getTopics,
   getArticleById,
@@ -95,4 +107,5 @@ module.exports = {
   postComment,
   incDecVotes,
   deleteComment,
+  getUsers,
 };
