@@ -349,4 +349,27 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(response.body.msg).toBe("400: Bad request");
       });
   });
+  test("should return 200 when given a negative inc_votes, and decrease the vote", () => {
+    const increaseVotes = { inc_votes: -1 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(increaseVotes)
+      .expect(200)
+      .then((response) => {
+        const article = response.body;
+        expect(article.votes).toEqual(99);
+        expect(article.article_id).toEqual(1);
+      });
+  });
+});
+describe("DELETE /api/comments/:comment_id", () => {
+  test("Should return a 204 and delete commment", () => {
+    return request(app).delete("/api/comments/4").expect(204);
+  });
+  test("Should return a 404 when attempting to delete a comment that doesn't exist", () => {
+    return request(app).delete("/api/comments/1000").expect(404);
+  });
+  test("Should return a 400 when passed an invalid comment_id", () => {
+    return request(app).delete("/api/comments/flip_flops").expect(400);
+  });
 });

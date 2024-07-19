@@ -20,3 +20,9 @@ exports.formatComments = (comments, idLookup) => {
     };
   });
 };
+
+exports.commentExists = (comments, comment_id) => {
+  return comments.map((comment) => {
+    return comment.includes(comment_id);
+  });
+};

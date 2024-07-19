@@ -7,6 +7,7 @@ const {
   getArticleComments,
   postComment,
   incDecVotes,
+  deleteComment,
 } = require("./controllers/api.topics.controller");
 const endpoints = require("./endpoints.json");
 const db = require("./db/connection");
@@ -30,6 +31,8 @@ app.get("/api/articles/:article_id/comments", getArticleComments);
 app.post("/api/articles/:article_id/comments", postComment);
 
 app.patch("/api/articles/:article_id", incDecVotes);
+
+app.delete("/api/comments/:comment_id", deleteComment);
 
 app.use((err, request, response, next) => {
   if (err.status) {
