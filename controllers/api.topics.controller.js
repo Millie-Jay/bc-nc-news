@@ -5,8 +5,10 @@ const {
   fetchArticleComments,
   createComment,
   patchVotes,
+  modelDeleteComment,
 } = require("../models/api.topics.models");
 const db = require("../db/connection");
+const commentExists = require("../db/seeds/utils");
 
 function getTopics(request, response) {
   fetchTopics().then((topics) => {
@@ -74,6 +76,17 @@ function incDecVotes(request, response, next) {
     });
 }
 
+function deleteComment(request, response, next) {
+  const { comment_id } = request.params;
+  modelDeleteComment(comment_id)
+    .then(() => {
+      response.status(204).send();
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
 module.exports = {
   getTopics,
   getArticleById,
@@ -81,4 +94,5 @@ module.exports = {
   getArticleComments,
   postComment,
   incDecVotes,
+  deleteComment,
 };
