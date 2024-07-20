@@ -91,7 +91,6 @@ function deleteComment(request, response, next) {
 function getUsers(request, response, next) {
   fetchUsers()
     .then((users) => {
-      console.log({ users });
       response.status(200).send({ users });
     })
     .catch((err) => {
