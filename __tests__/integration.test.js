@@ -114,7 +114,7 @@ describe("GET /api/articles", () => {
             topic: expect.any(String),
             created_at: expect.any(String),
             article_img_url: expect.any(String),
-            comment_count: expect.any(String),
+            comment_count: expect.any(Number),
           });
         });
       });
@@ -385,6 +385,58 @@ describe("GET /api/users", () => {
             username: expect.any(String),
             name: expect.any(String),
             avatar_url: expect.any(String),
+          });
+        });
+      });
+  });
+});
+
+describe("GET /api/articles (topic query", () => {
+  test("should return all the articles from given topic", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then((response) => {
+        const articles = response.body.articles;
+        expect(articles.length).not.toBe(0);
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+          });
+          expect(article.topic).toEqual("mitch");
+        });
+      });
+  });
+  test("should return 404 not found when querying invalid topic", () => {
+    return request(app)
+      .get("/api/articles?topic=invalidTopic")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Not found");
+      });
+  });
+  test("should return all articles when a topic is omitted", () => {
+    return request(app)
+      .get("/api/articles?topic=")
+      .expect(200)
+      .then((response) => {
+        const articles = response.body.articles;
+        expect(articles.length).not.toBe(0);
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
           });
         });
       });

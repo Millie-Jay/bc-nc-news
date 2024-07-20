@@ -29,9 +29,15 @@ function getArticleById(request, response, next) {
 }
 
 function getArticles(request, response, next) {
-  fetchArticles()
+  const topicQuery = request.query.topic;
+  const sortBy = request.query.sort_by;
+  const orderBy = request.query.order_by;
+  fetchArticles(topicQuery, sortBy, orderBy)
     .then((articles) => {
-      response.status(200).send({ articles: articles });
+      if (articles.length === 0) {
+        return Promise.reject({ status: 404, msg: "Not found" });
+      }
+      response.status(200).send({ articles });
     })
     .catch((err) => {
       next(err);
