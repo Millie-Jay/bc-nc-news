@@ -14,8 +14,6 @@ const endpoints = require("./endpoints.json");
 const db = require("./db/connection");
 
 app.use(express.json());
-//adds body to the request keys.
-//I will remove this comment on later tickets, I just want to see it so it sinks in.
 
 app.get("/api", (request, response, next) => {
   response.status(200).send({ endpoints: endpoints });
@@ -50,7 +48,6 @@ app.use((err, request, response, next) => {
 });
 
 app.use((err, request, response, next) => {
-  console.log(err);
   if (err.code === "23503") {
     response.status(404).send({ msg: "404: Not found" });
   } else next(err);
