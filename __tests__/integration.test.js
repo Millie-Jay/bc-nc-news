@@ -4,7 +4,6 @@ const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
 const data = require("../db/data/test-data");
 const endpoints = require("../endpoints.json");
-const express = require("express");
 
 beforeEach(() => {
   return seed(data);
