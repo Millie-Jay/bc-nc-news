@@ -13,6 +13,8 @@ const {
 const endpoints = require("./endpoints.json");
 const db = require("./db/connection");
 
+const cors = require("cors");
+
 app.use(express.json());
 
 app.get("/api", (request, response, next) => {
