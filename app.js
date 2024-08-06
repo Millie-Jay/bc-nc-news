@@ -15,6 +15,8 @@ const db = require("./db/connection");
 
 const cors = require("cors");
 
+app.use(cors());
+
 app.use(express.json());
 
 app.get("/api", (request, response, next) => {
